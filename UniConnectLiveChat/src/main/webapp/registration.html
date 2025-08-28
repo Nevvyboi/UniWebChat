@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniWebChat - Register</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span class="close-btn" onclick="closePopup()">&times;</span>
+            <p id="popup-message"></p>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="welcome-section">
+            <div class="university-logo">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <h1>UniWebChat</h1>
+            <p>Connect with your university community. Join discussions, collaborate on projects, and stay updated with campus events.</p>
+            <p>Secure, reliable, and exclusively for university students and staff.</p>
+        </div>
+        
+        <!-- Form Section -->
+        <div class="form-section">
+            <div class="form-container">
+                <div class="tabs">
+                    <div class="tab" onclick="window.location.href='login.html'">Login</div>
+                    <div class="tab active">Register</div>
+                </div>
+                
+                <div class="form active">
+                    <h2>Create Account</h2>
+                    
+                    <form id="registrationForm" action="register" method="post" onsubmit="handleRegistration(event)">
+                        <div class="input-group" id="usernameGroup">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                            <div class="error-message" id="usernameError"></div>
+                        </div>
+
+                        <div class="input-group password-group" id="passwordGroup">
+                            <label for="password">Password</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="password" name="password" placeholder="Create a strong password" required>
+                                <!-- exactly ONE icon -->
+                                <i class="fas fa-eye toggle-password" onclick="togglePassword('password', this)"></i>
+                            </div>
+                            <div class="password-strength" id="passwordStrength"><div class="password-strength-bar"></div></div>
+                            <div class="strength-text" id="strengthText"></div>
+                            <div class="error-message" id="passwordError"></div>
+                        </div>
+
+                        <div class="input-group password-group" id="confirmPasswordGroup">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
+                                <!-- exactly ONE icon -->
+                                <i class="fas fa-eye toggle-password" onclick="togglePassword('confirmPassword', this)"></i>
+                            </div>
+                            <div class="error-message" id="confirmPasswordError"></div>
+                        </div>
+
+                        <button class="btn" type="submit" id="submitBtn">Create Account</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function togglePassword(inputId, icon) {
+      const input = document.getElementById(inputId);
+      if (input.type === "password") {
+        input.type = "text";
+        icon.classList.replace("fa-eye", "fa-eye-slash");
+      } else {
+        input.type = "password";
+        icon.classList.replace("fa-eye-slash", "fa-eye");
+      }
+    }
+
+    function checkPasswordStrength(password) {
+        const strengthIndicator = document.getElementById('passwordStrength');
+        const strengthText = document.getElementById('strengthText');
+
+        let strength = 0;
+        let feedback = '';
+
+        if (password.length >= 8) strength += 1;
+        if (/[a-z]/.test(password)) strength += 1;
+        if (/[A-Z]/.test(password)) strength += 1;
+        if (/[0-9]/.test(password)) strength += 1;
+        if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+
+        strengthIndicator.className = 'password-strength';
+
+        if (password.length === 0) {
+            strengthText.textContent = '';
+            return;
+        }
+
+        if (strength <= 2) {
+            strengthIndicator.classList.add('weak');
+            feedback = 'Weak password';
+            strengthText.style.color = '#e74c3c';
+        } else if (strength <= 3) {
+            strengthIndicator.classList.add('medium');
+            feedback = 'Medium strength';
+            strengthText.style.color = '#f39c12';
+        } else {
+            strengthIndicator.classList.add('strong');
+            feedback = 'Strong password';
+            strengthText.style.color = '#27ae60';
+        } 
+        strengthText.textContent = feedback;
+    }
+
+    function showPopup(message) {
+      const popup = document.getElementById("popup");
+      document.getElementById("popup-message").textContent = message;
+      popup.style.display = "flex";
+    }
+    function closePopup(){ document.getElementById("popup").style.display = "none"; }
+
+    function validateForm() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (username.length < 3) {
+            showPopup("Username must be at least 3 characters long");
+            return false;
+        }
+
+        if (password.length < 8) {
+            showPopup('Password must be at least 8 characters long');
+            return false;
+        }
+
+        if (password !== confirmPassword) {
+            showPopup('Passwords do not match');
+            return false;
+        }
+        return true;
+    }
+
+    function handleRegistration(event) {
+        event.preventDefault();
+        if (!validateForm()) return;
+
+        document.getElementById('registrationForm').submit();
+    }
+
+    document.getElementById('password').addEventListener('input', function() {
+        checkPasswordStrength(this.value);
+    });
+    
+    (function () {
+        const params = new URLSearchParams(window.location.search);
+        const msg = params.get("msg");
+        const success = params.get("success"); 
+
+        if (msg) {
+            showPopup(decodeURIComponent(msg));
+            if (window.history && history.replaceState) {
+                const cleanURL = window.location.pathname;
+                history.replaceState({}, "", cleanURL);
+            }
+        }
+
+        if (success === "1") {
+            setTimeout(() => { window.location.href = "login.html"; }, 3000);
+        }
+    })();
+</script>
+</html>

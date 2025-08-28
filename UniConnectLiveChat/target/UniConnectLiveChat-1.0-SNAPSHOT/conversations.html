@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UniWebChat – Conversations</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2gB/yG6+e+r/a6t6xT/d2T/E9+f2D+a4h/99+L9/I4L9/f1t/c2x+x/I7/d7" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container page">
+    <header class="header">
+      <h2>🎓 UniWebChat <span class="online-dot"></span></h2>
+      <div class="user-actions">
+        <button title="Camera" onclick="window.location.href='camera.html'"><i class="fas fa-camera"></i></button>
+        <button title="Settings" id="openPfp"><i class="fas fa-cog"></i></button>
+        <button title="Logout" onclick="window.location.href='logout'"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+    </header>
+
+    <nav class="nav-tabs">
+      <div class="nav-tab" onclick="window.location.href='home.html'">Home</div>
+      <div class="nav-tab active">Conversations</div>
+    </nav>
+
+    <section class="chat-container">
+      <aside class="sidebar">
+        <div class="pinned-section">
+          <div class="contact active" id="room-ITEJA3-33" data-room="ITEJA3-33">
+            <div class="contact-avatar">IG</div>
+            <div class="contact-info">
+              <div class="contact-name">ITEJA3-33 Group</div>
+              <div class="contact-status">Pinned group</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="search-container">
+          <input id="search" placeholder="Search contacts or rooms..."/>
+        </div>
+
+        <div id="contactList" class="contacts"></div>
+      </aside>
+
+      <main class="chat-main">
+        <div class="chat-header">
+          <strong id="chatTitle">ITEJA3-33 Group</strong>
+        </div>
+
+        <div id="chat-thread" class="chat-thread"></div>
+
+        <div class="chat-composer">
+          <input id="messageInput" placeholder="Type your message..." />
+          <button id="sendBtn" class="send-btn" title="Send"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+      </main>
+    </section>
+  </div>
+  <script src="chat.js"></script>
+</body>
+</html>

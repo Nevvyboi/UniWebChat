@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniWebChat - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="popup" class="popup" style="display:none">
+      <div class="popup-content">
+        <span class="close-btn" onclick="closePopup()">&times;</span>
+        <p id="popup-message"></p>
+      </div>
+    </div>
+
+    <div class="container">
+        <div class="welcome-section">
+            <div class="university-logo">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <h1>UniWebChat</h1>
+            <p>Connect with your university community. Join discussions, collaborate on projects, and stay updated with campus events.</p>
+            <p>Secure, reliable, and exclusively for university students and staff.</p>
+        </div>
+        
+        <div class="form-section">
+            <div class="form-container">
+                <div class="tabs">
+                    <div class="tab active">Login</div>
+                    <div class="tab" onclick="window.location.href='registration.html'">Register</div>
+                </div>
+                
+                <div class="form active">
+                    <h2>Welcome Back</h2>
+
+                    <form id="loginForm" action="login" method="post">
+                        <div class="input-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                        </div>
+                        <div class="input-group" id="passwordGroup">
+                            <label for="password">Password</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                                <i class="fas fa-eye toggle-password" onclick="togglePassword('password', this)"></i>
+                            </div>
+                            <div class="error-message" id="passwordError"></div>
+                        </div>
+                        <button class="btn" type="submit" id="loginBtn">
+                            <span id="loginText">Login to Your Account</span>
+                            <span class="loading" id="loginLoading">
+                                <span class="spinner"></span>
+                                <span>Logging in...</span>
+                            </span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function togglePassword(inputId, icon) {
+      const input = document.getElementById(inputId);
+      if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+      } else {
+        input.type = "password";
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+      }
+    }
+
+    const form = document.getElementById('loginForm'); 
+    const loginBtn = document.getElementById('loginBtn');
+
+    form.addEventListener('submit', () => {
+        loginBtn.classList.add('loading');
+        loginBtn.disabled = true;
+    });
+  
+    function showPopup(message) {
+        document.getElementById("popup-message").textContent = message;
+        document.getElementById("popup").style.display = "flex";
+    }
+    function closePopup() {
+        document.getElementById("popup").style.display = "none";
+    }
+
+    (function () {
+        const params = new URLSearchParams(window.location.search);
+        const msg = params.get("msg");
+        if (msg) {
+            showPopup(decodeURIComponent(msg));
+            if (history.replaceState) history.replaceState({}, "", window.location.pathname);
+        }
+    })();
+</script>
+</html>
