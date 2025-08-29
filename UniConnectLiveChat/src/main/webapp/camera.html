@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UniWebChat - Camera</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    :root {
+      --theme-color: #4a6bff;
+      --theme-secondary: #667eea;
+      --theme-tertiary: #764ba2;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--theme-color) 0%, var(--theme-secondary) 50%, var(--theme-tertiary) 100%);
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.5s ease;
+      position: relative;
+    }
+    
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
+      animation: float 20s ease-in-out infinite;
+      z-index: -1;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      33% { transform: translateY(-20px) rotate(1deg); }
+      66% { transform: translateY(10px) rotate(-1deg); }
+    }
+
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 1200px;
+      height: 95vh;
+      max-height: 800px;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      margin: 20px;
+    }
+
+    
+    .header {
+      background: var(--theme-color);
+      color: white;
+      padding: 12px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.3s ease;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+
+    .user-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .user-actions button {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: 50%;
+      width: 35px;
+      height: 35px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .user-actions button:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.05);
+    }
+
+    
+    .nav-tabs {
+      display: flex;
+      background: #f0f4ff;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .nav-tab {
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    .nav-tab.active {
+      background: white;
+      border-bottom: 3px solid var(--theme-color);
+      color: var(--theme-color);
+    }
+
+    .nav-tab:hover:not(.active) {
+      background: rgba(74, 107, 255, 0.1);
+    }
+
+    
+    .content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    
+    .camera-container {
+      width: 100%;
+      max-width: 600px;
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .camera-preview {
+      width: 100%;
+      height: 400px;
+      background-color: #000;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #videoElement {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .camera-controls {
+      display: flex;
+      justify-content: center;
+      padding: 15px;
+      gap: 15px;
+    }
+
+    .camera-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: none;
+      background-color: var(--theme-color);
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      transition: all 0.3s;
+    }
+
+    .camera-btn:hover {
+      transform: scale(1.05);
+      filter: brightness(1.1);
+    }
+
+    .camera-btn.recording {
+      background-color: #ff4757;
+      animation: pulse 1.5s infinite;
+    }
+
+    .switch-camera {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    
+    .preview-container {
+      width: 100%;
+      max-width: 600px;
+      margin-top: 20px;
+      background-color: white;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      display: none;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .preview-content {
+      width: 100%;
+      text-align: center;
+    }
+
+    #capturedImage {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: 8px;
+    }
+
+    #recordedVideo {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: 8px;
+    }
+
+    .preview-actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .btn {
+      padding: 8px 15px;
+      background-color: var(--theme-color);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+
+    .btn:hover {
+      filter: brightness(0.9);
+    }
+
+    .btn.secondary {
+      background-color: #777777;
+    }
+
+    
+    .theme-blue {
+      --theme-color: #4a6bff;
+      --theme-secondary: #667eea;
+      --theme-tertiary: #764ba2;
+    }
+
+    .theme-red {
+      --theme-color: #ff4757;
+      --theme-secondary: #ff6b7a;
+      --theme-tertiary: #c44569;
+    }
+
+    .theme-green {
+      --theme-color: #2ed573;
+      --theme-secondary: #7bed9f;
+      --theme-tertiary: #5f27cd;
+    }
+
+    
+    .dark-mode {
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+      color: #e6e9f0;
+    }
+
+    .dark-mode::before {
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(74, 107, 255, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(74, 107, 255, 0.2) 0%, transparent 50%);
+    }
+
+    .dark-mode .app-container {
+      background: #222b45;
+      color: #e6e9f0;
+    }
+
+    .dark-mode .header {
+      background: var(--theme-color);
+    }
+
+    .dark-mode .nav-tabs {
+      background: #252f48;
+      border-bottom: 1px solid #344672;
+    }
+
+    .dark-mode .nav-tab.active {
+      background: #222b45;
+      color: var(--theme-color);
+    }
+
+    .dark-mode .nav-tab:hover:not(.active) {
+      background: rgba(109, 139, 255, 0.1);
+    }
+
+    .dark-mode .camera-container {
+      background-color: #252f48;
+    }
+
+    .dark-mode .preview-container {
+      background-color: #252f48;
+    }
+
+    .dark-mode .preview-header h3 {
+      color: #e6e9f0;
+    }
+
+    
+    .floating-controls {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 1000;
+      width: 90px;
+      height: 90px;
+    }
+    
+    .main-toggle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--theme-color);
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      backdrop-filter: blur(10px);
+    }
+    
+    .main-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+    }
+    
+    .dark-mode .main-toggle {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid var(--theme-color);
+      backdrop-filter: blur(15px);
+    }
+    
+    .theme-options {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s;
+    }
+    
+    .floating-controls:hover .theme-options,
+    .theme-options:hover {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .theme-option {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 3px solid white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      transform-origin: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .theme-option:hover {
+      transform: scale(1.2);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .theme-option.active {
+      border-color: #ffd700;
+      box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.5);
+    }
+    
+    .dark-mode .theme-option {
+      border-color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .dark-mode .theme-option.active {
+      border-color: #ffd700;
+    }
+    
+    .theme-options .theme-option:nth-child(1) { 
+      top: -70px; 
+      left: -70px; 
+      background: linear-gradient(135deg, #4a6bff, #667eea);
+    }
+    
+    .theme-options .theme-option:nth-child(2) { 
+      top: -75px; 
+      left: -5px; 
+      background: linear-gradient(135deg, #ff4757, #ff6b7a);
+    }
+    
+    .theme-options .theme-option:nth-child(3) { 
+      top: -5px; 
+      left: -75px; 
+      background: linear-gradient(135deg, #2ed573, #7bed9f);
+    }
+    
+    .theme-options, .theme-options * {
+      pointer-events: auto;
+    }
+
+    
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7);
+      }
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(255, 71, 87, 0);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 71, 87, 0);
+      }
+    }
+
+    
+    .main-toggle::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 50%;
+      background: var(--theme-color);
+      animation: pulse-main 2s infinite;
+      z-index: -1;
+    }
+    
+    @keyframes pulse-main {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.2);
+        opacity: 0.3;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes rippleTheme {
+      to {
+        transform: translate(-50%, -50%) scale(4);
+        opacity: 0;
+      }
+    }
+
+    
+    @media (max-width: 768px) {
+      .app-container {
+        height: 92vh;
+        margin: 15px;
+      }
+
+      .camera-preview {
+        height: 300px;
+      }
+
+      .floating-controls {
+        bottom: 20px;
+        right: 20px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .app-container {
+        height: 90vh;
+        margin: 10px;
+        border-radius: 8px;
+      }
+
+      .camera-preview {
+        height: 250px;
+      }
+      
+      .camera-btn {
+        width: 50px;
+        height: 50px;
+      }
+
+      .floating-controls {
+        bottom: 15px;
+        right: 15px;
+      }
+
+      .main-toggle {
+        width: 50px;
+        height: 50px;
+        font-size: 16px;
+      }
+
+      .theme-option {
+        width: 35px;
+        height: 35px;
+      }
+      
+      .content {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body class="theme-blue">
+  <div class="app-container">
+    
+    <div class="header">
+      <div class="logo">
+        <i class="fas fa-graduation-cap"></i>
+        <span>UniWebChat</span>
+      </div>
+      <div class="user-actions">
+        <button title="Camera"><i class="fas fa-camera"></i></button>
+        <button title="Settings"><i class="fas fa-cog"></i></button>
+        <button title="Logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+    </div>
+    
+    
+    <div class="nav-tabs">
+      <div class="nav-tab" onclick="window.location.href='home.html'">Home</div>
+      <div class="nav-tab" onclick="window.location.href='conversations.html'">Conversations</div>
+      <div class="nav-tab active">Camera</div>
+    </div>
+    
+    
+    <div class="content">
+      <div class="camera-container">
+        <div class="camera-preview">
+          <video id="videoElement" autoplay playsinline></video>
+          <button class="switch-camera" id="switchCamera">
+            <i class="fas fa-sync-alt"></i>
+          </button>
+        </div>
+        <div class="camera-controls">
+          <button class="camera-btn" id="captureBtn">
+            <i class="fas fa-camera"></i>
+          </button>
+          <button class="camera-btn" id="recordBtn">
+            <i class="fas fa-video"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="preview-container" id="previewContainer">
+        <div class="preview-header">
+          <h3>Preview</h3>
+          <button class="btn secondary" id="cancelPreview">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="preview-content">
+          <img id="capturedImage" alt="Captured image">
+          <video id="recordedVideo" controls style="display: none;"></video>
+        </div>
+        <div class="preview-actions">
+          <button class="btn" id="sendToChat">
+            <i class="fas fa-paper-plane"></i> Send to Chat
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  <div class="floating-controls">
+    <button class="main-toggle" id="main-toggle">
+      <i class="fas fa-sun"></i>
+    </button>
+    <div class="theme-options">
+      <button class="theme-option active" data-theme="blue" title="Ocean Blue"></button>
+      <button class="theme-option" data-theme="red" title="Sunset Red"></button>
+      <button class="theme-option" data-theme="green" title="Forest Green"></button>
+    </div>
+  </div>
+
+  <script>
+    
+    const videoElement = document.getElementById('videoElement');
+    const captureBtn = document.getElementById('captureBtn');
+    const recordBtn = document.getElementById('recordBtn');
+    const switchCameraBtn = document.getElementById('switchCamera');
+    const previewContainer = document.getElementById('previewContainer');
+    const capturedImage = document.getElementById('capturedImage');
+    const recordedVideo = document.getElementById('recordedVideo');
+    const cancelPreview = document.getElementById('cancelPreview');
+    const sendToChat = document.getElementById('sendToChat');
+    
+    let stream = null;
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let isRecording = false;
+    let isFrontCamera = false;
+    
+    
+    async function initCamera() {
+      try {
+        const constraints = {
+          video: { 
+            facingMode: isFrontCamera ? "user" : "environment",
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          },
+          audio: true
+        };
+        
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+        videoElement.srcObject = stream;
+      } catch (error) {
+        console.error('Error accessing camera:', error);
+        alert('Unable to access camera. Please check permissions.');
+      }
+    }
+    
+    
+    switchCameraBtn.addEventListener('click', async () => {
+      isFrontCamera = !isFrontCamera;
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+      await initCamera();
+    });
+    
+    
+    function blobToDataURL(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    
+    captureBtn.addEventListener('click', () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = videoElement.videoWidth;
+      canvas.height = videoElement.videoHeight;
+      const context = canvas.getContext('2d');
+      context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+      
+      capturedImage.src = canvas.toDataURL('image/png');
+      capturedImage.style.display = 'block';
+      recordedVideo.style.display = 'none';
+      previewContainer.style.display = 'block';
+    });
+    
+    
+    recordBtn.addEventListener('click', () => {
+      if (!isRecording) {
+        
+        recordedChunks = [];
+        const options = { mimeType: 'video/webm; codecs=vp9' };
+        mediaRecorder = new MediaRecorder(stream, options);
+        
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            recordedChunks.push(event.data);
+          }
+        };
+        
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(recordedChunks, { type: 'video/webm' });
+          recordedVideo.src = URL.createObjectURL(blob);
+          capturedImage.style.display = 'none';
+          recordedVideo.style.display = 'block';
+          previewContainer.style.display = 'block';
+        };
+        
+        mediaRecorder.start();
+        recordBtn.classList.add('recording');
+        isRecording = true;
+      } else {
+        
+        mediaRecorder.stop();
+        recordBtn.classList.remove('recording');
+        isRecording = false;
+      }
+    });
+    
+    
+    cancelPreview.addEventListener('click', () => {
+      previewContainer.style.display = 'none';
+    });
+    
+    
+sendToChat.addEventListener('click', async () => {
+  try {
+    const sender = (function () {
+      try { return sessionStorage.getItem('username') || localStorage.getItem('username') || ''; } catch { return ''; }
+    })();
+    const room = 'ITEJA3-33 Group'; 
+
+    let msg = null;
+    
+    if (capturedImage.style.display === 'block' && capturedImage.src) {
+      msg = {
+        type: 'media',
+        mediaType: 'image',
+        data: capturedImage.src,            
+        sender: sender || 'Me',
+        room, sentAt: Date.now()
+      };
+    }
+    
+    else if (recordedVideo.style.display === 'block') {
+      if (typeof recordedChunks !== 'undefined' && recordedChunks.length) {
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const dataUrl = await blobToDataURL(blob);
+        msg = { type:'media', mediaType:'video', data: dataUrl, sender: sender || 'Me', room, sentAt: Date.now() };
+      } else if (recordedVideo.src) {
+        const res = await fetch(recordedVideo.src);
+        const blob = await res.blob();
+        const dataUrl = await blobToDataURL(blob);
+        msg = { type:'media', mediaType:'video', data: dataUrl, sender: sender || 'Me', room, sentAt: Date.now() };
+      }
+    }
+
+    if (msg) {
+      sessionStorage.setItem('pendingMedia', JSON.stringify(msg));
+    }
+  } catch (e) {
+    console.warn('Failed to prepare media for chat', e);
+  }
+  
+  window.location.href = 'conversations.html';
+});
+    const themeOptions = document.querySelectorAll('.theme-option');
+    const mainToggle = document.getElementById('main-toggle');
+    
+    
+    themeOptions.forEach(option => {
+      option.addEventListener('click', (e) => {
+        e.stopPropagation();
+        
+        
+        document.body.classList.remove('theme-blue', 'theme-red', 'theme-green');
+        
+        
+        document.body.classList.add(`theme-${option.dataset.theme}`);
+        
+        
+        themeOptions.forEach(opt => opt.classList.remove('active'));
+        option.classList.add('active');
+        
+        
+        const ripple = document.createElement('div');
+        ripple.style.cssText = `
+          position: absolute;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.6);
+          transform: scale(0);
+          animation: rippleTheme 0.6s linear;
+          pointer-events: none;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          width: 100%;
+          height: 100%;
+        `;
+        
+        option.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+      });
+    });
+    
+    
+    mainToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      const isDark = document.body.classList.contains('dark-mode');
+      
+      
+      mainToggle.innerHTML = isDark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+    });
+    
+    
+    function logout() {
+      window.location.href = 'index.html';
+    }
+
+    
+    (function() {
+      const THEME_KEY = 'uwc-theme';
+      const DARK_KEY  = 'uwc-dark';
+
+      function applyTheme(theme) {
+        if (!theme) return;
+        document.body.classList.remove('theme-blue','theme-red','theme-green');
+        document.body.classList.add('theme-' + theme);
+        
+        document.querySelectorAll('.theme-option').forEach(opt => {
+          const isActive = opt.dataset.theme === theme;
+          opt.classList.toggle('active', isActive);
+        });
+      }
+
+      function applyDarkMode(isDark) {
+        document.body.classList.toggle('dark-mode', !!isDark);
+        const mainToggle = document.getElementById('main-toggle');
+        if (mainToggle) {
+          mainToggle.innerHTML = document.body.classList.contains('dark-mode')
+            ? '<i class="fas fa-moon"></i>'
+            : '<i class="fas fa-sun"></i>';
+        }
+      }
+
+      
+      try {
+        const savedTheme = localStorage.getItem(THEME_KEY);
+        const savedDark  = localStorage.getItem(DARK_KEY) === 'true';
+        applyTheme(savedTheme || 'blue'); 
+        applyDarkMode(savedDark);
+      } catch (e) {  }
+
+      
+      window.addEventListener('DOMContentLoaded', () => {
+        
+        document.querySelectorAll('.theme-option').forEach(option => {
+          option.addEventListener('click', () => {
+            const theme = option.dataset.theme;
+            try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+          });
+        });
+
+        
+        const mainToggle = document.getElementById('main-toggle');
+        if (mainToggle) {
+          mainToggle.addEventListener('click', () => {
+            
+            setTimeout(() => {
+              const isDark = document.body.classList.contains('dark-mode');
+              try { localStorage.setItem(DARK_KEY, isDark ? 'true' : 'false'); } catch (e) {}
+            }, 10);
+          });
+        }
+      });
+    })();
+    
+    
+    window.addEventListener('load', initCamera);
+  </script>
+</body>
+</html>

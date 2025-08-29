@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UniWebChat - Home</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    :root {
+      --theme-color: #4a6bff;
+      --theme-secondary: #667eea;
+      --theme-tertiary: #764ba2;
+    }
+    
+    body {
+      background: linear-gradient(135deg, var(--theme-color) 0%, var(--theme-secondary) 50%, var(--theme-tertiary) 100%);
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      transition: all 0.5s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
+      animation: float 20s ease-in-out infinite;
+      z-index: -1;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      33% { transform: translateY(-20px) rotate(1deg); }
+      66% { transform: translateY(10px) rotate(-1deg); }
+    }
+    
+    .app-container {
+      width: 100%;
+      max-width: 1200px;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    
+    .header {
+      background: var(--theme-color);
+      color: white;
+      padding: 12px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.3s ease;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+    
+    .user-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .user-actions button {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: 50%;
+      width: 35px;
+      height: 35px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .user-actions button:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.05);
+    }
+    
+    
+    .nav-tabs {
+      display: flex;
+      background: #f0f4ff;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .nav-tab {
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+    
+    .nav-tab.active {
+      background: white;
+      border-bottom: 3px solid var(--theme-color);
+      color: var(--theme-color);
+    }
+    
+    .nav-tab:hover:not(.active) {
+      background: rgba(74, 107, 255, 0.1);
+    }
+    
+    
+    .content {
+      padding: 20px;
+    }
+    
+    
+    .welcome-card {
+      background: linear-gradient(to right, var(--theme-color), var(--theme-secondary));
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .cards-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s;
+      text-align: center;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-icon {
+      width: 50px;
+      height: 50px;
+      background: #f0f4ff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+      font-size: 20px;
+      color: var(--theme-color);
+    }
+    
+    .card h4 {
+      margin-bottom: 8px;
+      color: #333;
+      font-size: 1.1rem;
+    }
+    
+    .card p {
+      color: #666;
+      margin-bottom: 15px;
+      font-size: 0.9rem;
+    }
+    
+    .btn {
+      padding: 8px 15px;
+      background: var(--theme-color);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.9rem;
+    }
+    
+    .btn:hover {
+      filter: brightness(0.9);
+    }
+    
+    
+    .theme-blue {
+      --theme-color: #4a6bff;
+      --theme-secondary: #667eea;
+      --theme-tertiary: #764ba2;
+    }
+    
+    .theme-red {
+      --theme-color: #ff4757;
+      --theme-secondary: #ff6b7a;
+      --theme-tertiary: #c44569;
+    }
+    
+    .theme-green {
+      --theme-color: #2ed573;
+      --theme-secondary: #7bed9f;
+      --theme-tertiary: #5f27cd;
+    }
+    
+    .theme-orange {
+      --theme-color: #ffa502;
+      --theme-secondary: #ff6348;
+      --theme-tertiary: #ff4757;
+    }
+    
+    
+    .dark-mode {
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+      color: #e6e9f0;
+    }
+    
+    .dark-mode::before {
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(var(--theme-color-rgb), 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(var(--theme-color-rgb), 0.2) 0%, transparent 50%);
+    }
+    
+    .dark-mode .app-container {
+      background: #222b45;
+      color: #e6e9f0;
+    }
+    
+    .dark-mode .header {
+      background: var(--theme-color);
+    }
+    
+    .dark-mode .nav-tabs {
+      background: #252f48;
+      border-bottom: 1px solid #344672;
+    }
+    
+    .dark-mode .nav-tab.active {
+      background: #222b45;
+      color: var(--theme-color);
+    }
+    
+    .dark-mode .nav-tab:hover:not(.active) {
+      background: rgba(109, 139, 255, 0.1);
+    }
+    
+    .dark-mode .welcome-card {
+      background: linear-gradient(to right, #2a3655, #3a4785);
+    }
+    
+    .dark-mode .card {
+      background: #252f48;
+    }
+    
+    .dark-mode .card-icon {
+      background: #2a3655;
+      color: var(--theme-color);
+    }
+    
+    .dark-mode .card h4 {
+      color: #e6e9f0;
+    }
+    
+    .dark-mode .card p {
+      color: #b4bad0;
+    }
+    
+    
+    .floating-controls {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 1000;
+    }
+    
+    .main-toggle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--theme-color);
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      position: relative;
+      backdrop-filter: blur(10px);
+    }
+    
+    .main-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+    }
+    
+    .dark-mode .main-toggle {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid var(--theme-color);
+      backdrop-filter: blur(15px);
+    }
+    
+    .theme-options {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .floating-controls:hover .theme-options,
+    .theme-options:hover {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .floating-controls:hover .theme-option,
+    .theme-options:hover .theme-option {
+      animation: floatIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    
+    .theme-option {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 3px solid white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      transform-origin: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .theme-option:hover {
+      transform: scale(1.2);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .theme-option.active {
+      border-color: #ffd700;
+      box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.5);
+    }
+    
+    .dark-mode .theme-option {
+      border-color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .dark-mode .theme-option.active {
+      border-color: #ffd700;
+    }
+    
+    
+    .theme-option:nth-child(1) { 
+      top: -80px;
+      left: -80px;
+      background: linear-gradient(135deg, #4a6bff, #667eea);
+      animation-delay: 0.1s;
+    }
+    
+    .theme-option:nth-child(2) { 
+      top: -90px;
+      left: -10px;
+      background: linear-gradient(135deg, #ff4757, #ff6b7a);
+      animation-delay: 0.2s;
+    }
+    
+    .theme-option:nth-child(3) { 
+      top: -10px;
+      left: -90px;
+      background: linear-gradient(135deg, #2ed573, #7bed9f);
+      animation-delay: 0.3s;
+    }
+    
+    .theme-option:nth-child(4) { 
+      top: 10px;
+      left: -80px;
+      background: linear-gradient(135deg, #ffa502, #ff6348);
+      animation-delay: 0.4s;
+    }
+    
+    
+    .theme-option {
+      transform: scale(0) translateY(20px);
+      opacity: 0;
+    }
+    
+    @keyframes floatIn {
+      0% {
+        transform: scale(0) translateY(20px);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    
+    .main-toggle::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 50%;
+      background: var(--theme-color);
+      animation: pulse 2s infinite;
+      z-index: -1;
+    }
+    
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.2);
+        opacity: 0.3;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    
+    .floating-controls {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 1000;
+      
+      width: 90px;
+      height: 90px;
+    }
+
+    
+    .floating-controls .main-toggle,
+    .main-toggle {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    }
+
+    
+    .theme-options {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s;
+    }
+
+    
+    .floating-controls:hover .theme-options,
+    .theme-options:hover {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    
+    .theme-options .theme-option:nth-child(1) { top: -70px; left: -70px; position: absolute; }
+    .theme-options .theme-option:nth-child(2) { top: -75px; left: -5px; position: absolute; }
+    .theme-options .theme-option:nth-child(3) { top: -5px; left: -75px; position: absolute; }
+    .theme-options .theme-option:nth-child(4) { top: 10px; left: -70px; position: absolute; }
+
+    
+    .theme-options, .theme-options * {
+      pointer-events: auto;
+    }
+    
+    
+    @media (max-width: 768px) {
+      .cards-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .app-container {
+        max-width: 100%;
+      }
+      
+      .floating-controls {
+        bottom: 20px;
+        right: 20px;
+      }
+    }
+  </style>
+</head>
+<body class="theme-blue">
+  <div class="app-container">
+    
+    <div class="header">
+      <div class="logo">
+        <i class="fas fa-graduation-cap"></i>
+        <span>UniWebChat</span>
+      </div>
+      <div class="user-actions">
+        <button title="Camera" onclick="window.location.href='camera.html'"><i class="fas fa-camera"></i></button>
+        <button title="Logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+    </div>
+    
+    
+    <div class="nav-tabs">
+      <div class="nav-tab active">Home</div>
+      <div class="nav-tab" onclick="window.location.href='conversations.html'">Conversations</div>
+    </div>
+    
+    
+    <div class="content">
+      <div class="welcome-card">
+        <h3>Welcome back, <span id="userName">Student</span> 👋</h3>
+        <p>Glad to see you again! Here's what's happening in your university community today.</p>
+      </div>
+      
+      <div class="cards-container">
+        <div class="card">
+          <div class="card-icon"><i class="fas fa-comments"></i></div>
+          <h4>Conversations</h4>
+          <p>Chat with your classmates, join groups, and collaborate in real-time.</p>
+          <button class="btn" onclick="window.location.href='conversations.html'">Go to Chats</button>
+        </div>
+        
+        <div class="card">
+          <div class="card-icon"><i class="fas fa-camera"></i></div>
+          <h4>Camera</h4>
+          <p>Capture photos or record a short video to share in your conversations.</p>
+          <button class="btn" onclick="window.location.href='camera.html'">Open Camera</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  <div class="floating-controls">
+    <button class="main-toggle" id="main-toggle">
+      <i class="fas fa-sun"></i>
+    </button>
+    <div class="theme-options">
+      <button class="theme-option active" data-theme="blue" title="Ocean Blue"></button>
+      <button class="theme-option" data-theme="red" title="Sunset Red"></button>
+      <button class="theme-option" data-theme="green" title="Forest Green"></button>
+    </div>
+  </div>
+
+  <script>
+    
+    document.getElementById('userName').textContent = localStorage.getItem('username') || 'Student';
+    
+    
+    const themeOptions = document.querySelectorAll('.theme-option');
+    const mainToggle = document.getElementById('main-toggle');
+    
+    
+    themeOptions.forEach(option => {
+      option.addEventListener('click', (e) => {
+        e.stopPropagation(); 
+        
+        
+        document.body.classList.remove('theme-blue', 'theme-red', 'theme-green');
+        
+        
+        document.body.classList.add(`theme-${option.dataset.theme}`);
+        
+        
+        themeOptions.forEach(opt => opt.classList.remove('active'));
+        option.classList.add('active');
+        
+        
+        const ripple = document.createElement('div');
+        ripple.style.cssText = `
+          position: absolute;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.6);
+          transform: scale(0);
+          animation: rippleTheme 0.6s linear;
+          pointer-events: none;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          width: 100%;
+          height: 100%;
+        `;
+        
+        option.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+        
+        
+        try {
+          localStorage.setItem('uwc-theme', option.dataset.theme);
+        } catch (e) {
+          console.log('Could not save theme preference');
+        }
+      });
+    });
+    
+    
+    mainToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      const isDark = document.body.classList.contains('dark-mode');
+      
+      
+      mainToggle.innerHTML = isDark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+      
+      
+      try {
+        localStorage.setItem('uwc-dark', isDark ? 'true' : 'false');
+      } catch (e) {
+        console.log('Could not save dark mode preference');
+      }
+    });
+    
+    
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes rippleTheme {
+        to {
+          transform: translate(-50%, -50%) scale(4);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    
+    function logout() {
+      localStorage.removeItem('username');
+      window.location.href = 'login.html';
+    }
+
+    
+    (function() {
+      const THEME_KEY = 'uwc-theme';
+      const DARK_KEY  = 'uwc-dark';
+
+      function applyTheme(theme) {
+        if (!theme) return;
+        document.body.classList.remove('theme-blue','theme-red','theme-green');
+        document.body.classList.add('theme-' + theme);
+        
+        document.querySelectorAll('.theme-option').forEach(opt => {
+          const isActive = opt.dataset.theme === theme;
+          opt.classList.toggle('active', isActive);
+        });
+      }
+
+      function applyDarkMode(isDark) {
+        document.body.classList.toggle('dark-mode', !!isDark);
+        const mainToggle = document.getElementById('main-toggle');
+        if (mainToggle) {
+          mainToggle.innerHTML = document.body.classList.contains('dark-mode')
+            ? '<i class="fas fa-moon"></i>'
+            : '<i class="fas fa-sun"></i>';
+        }
+      }
+
+      
+      try {
+        const savedTheme = localStorage.getItem(THEME_KEY);
+        const savedDark  = localStorage.getItem(DARK_KEY) === 'true';
+        applyTheme(savedTheme || 'blue'); 
+        applyDarkMode(savedDark);
+      } catch (e) {  }
+
+      
+      window.addEventListener('DOMContentLoaded', () => {
+        
+        document.querySelectorAll('.theme-option').forEach(option => {
+          option.addEventListener('click', () => {
+            const theme = option.dataset.theme;
+            try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+          });
+        });
+
+        
+        const mainToggle = document.getElementById('main-toggle');
+        if (mainToggle) {
+          mainToggle.addEventListener('click', () => {
+            const isDark = document.body.classList.contains('dark-mode');
+            try { localStorage.setItem(DARK_KEY, isDark ? 'true' : 'false'); } catch (e) {}
+          });
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
